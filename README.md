@@ -1,2 +1,2 @@
-# Infrastructure-as-a-code
-Terraform code for AWS infra 
+# automation script
+Automation script for cpu usage and db backup
