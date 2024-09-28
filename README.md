@@ -1,2 +1,2 @@
 # Infrastructure-as-a-code
-Terraform code 
+Terraform code for AWS infra 
