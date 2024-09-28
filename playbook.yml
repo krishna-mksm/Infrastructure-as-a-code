@@ -1,0 +1,88 @@
+---
+- name: Install Apache2, MySQL, Docker, and run a container with ephemeral storage
+  hosts: all
+  become: yes
+
+  tasks:
+    - name: Update the apt package index
+      apt:
+        update_cache: yes
+
+    # Install Apache2
+    - name: Install Apache2
+      apt:
+        name: apache2
+        state: present
+
+    - name: Ensure Apache2 is started and enabled
+      service:
+        name: apache2
+        state: started
+        enabled: yes
+
+    # Install MySQL Server
+    - name: Install MySQL server
+      apt:
+        name: mysql-server
+        state: present
+
+    - name: Ensure MySQL service is started and enabled
+      service:
+        name: mysql
+        state: started
+        enabled: yes
+
+    # Install Docker
+    - name: Install Docker dependencies
+      apt:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - apt-transport-https
+        - ca-certificates
+        - curl
+        - software-properties-common
+
+    - name: Add Docker's official GPG key
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+
+    - name: Set up Docker repository
+      apt_repository:
+        repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable"
+        state: present
+
+    - name: Install Docker
+      apt:
+        name: docker-ce
+        state: present
+
+    - name: Ensure Docker is started and enabled
+      service:
+        name: docker
+        state: started
+        enabled: yes
+
+    # Pull and start Docker container
+    - name: Pull Docker image (e.g., nginx)
+      docker_image:
+        name: nginx
+        source: pull
+
+    - name: Create a directory for ephemeral storage
+      file:
+        path: /mnt/ephemeral_storage
+        state: directory
+
+    - name: Run Docker container with ephemeral storage attached
+      docker_container:
+        name: nginx_container
+        image: nginx
+        state: started
+        volumes:
+          - /mnt/ephemeral_storage:/usr/share/nginx/html
+
+    - name: Print success message
+      debug:
+        msg: "Dependencies installed and Docker container started successfully with ephemeral storage!"
