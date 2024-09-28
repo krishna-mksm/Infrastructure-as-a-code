@@ -1,0 +1,10 @@
+version: '3'
+services:
+  web:
+    image: nginx:latest    # Use the NGINX image
+    container_name: webserver
+    ports:
+      - "8080:80"           # Expose port 8080 on the host to port 80 in the container
+    volumes:
+      - ./index.html:/usr/share/nginx/html/index.html  # Mount the local HTML file to the container
+    restart: always         # Restart the container automatically if it fails
